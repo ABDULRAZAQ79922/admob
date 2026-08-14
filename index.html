@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DocuSheetAI — Image to Excel Sheets</title>
+<meta name="description" content="DocuSheetAI converts images to Excel sheets instantly using AI. Fast, accurate, and easy to use document processing app for Android.">
+<style>
+  :root{
+    --blue:#2563eb;
+    --green:#16a34a;
+    --dark:#0f172a;
+    --muted:#64748b;
+    --bg:#f8fafc;
+    --card:#ffffff;
+    --border:#e2e8f0;
+    --radius:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:'Segoe UI',system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--dark);
+    line-height:1.6;
+  }
+  a{text-decoration:none;color:inherit;}
+  img{max-width:100%;display:block;}
+
+  header{
+    position:sticky;top:0;z-index:100;
+    background:rgba(255,255,255,0.9);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--border);
+  }
+  .nav{
+    max-width:1120px;margin:0 auto;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 24px;
+  }
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.15rem;}
+  .brand img{width:36px;height:36px;border-radius:8px;}
+  .brand .ai{background:linear-gradient(90deg,var(--blue),var(--green));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .nav-links{display:flex;gap:28px;font-weight:500;font-size:.95rem;color:var(--muted);}
+  .nav-links a:hover{color:var(--blue);}
+  .btn{
+    display:inline-block;padding:10px 22px;border-radius:999px;font-weight:600;font-size:.9rem;
+    background:linear-gradient(90deg,var(--blue),var(--green));color:#fff;
+    box-shadow:0 6px 18px rgba(37,99,235,.25);
+    transition:transform .2s ease, box-shadow .2s ease;
+  }
+  .btn:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(37,99,235,.35);}
+  .btn-outline{
+    background:none;color:var(--blue);border:1.5px solid var(--blue);box-shadow:none;
+  }
+  .btn-outline:hover{background:rgba(37,99,235,.06);}
+
+  .hero{
+    max-width:1120px;margin:0 auto;
+    padding:72px 24px 40px;
+    display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center;
+  }
+  .hero h1{font-size:2.6rem;font-weight:800;line-height:1.15;margin-bottom:18px;}
+  .hero h1 span{background:linear-gradient(90deg,var(--blue),var(--green));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .hero p{color:var(--muted);font-size:1.08rem;max-width:520px;margin-bottom:28px;}
+  .hero-actions{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:20px;}
+  .rating-line{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:.92rem;}
+  .stars{color:#f59e0b;letter-spacing:1px;}
+
+  .hero-visual{
+    background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+    padding:32px;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 20px 40px rgba(15,23,42,.06);
+  }
+  .hero-visual img{width:220px;height:220px;border-radius:20px;}
+
+  section{max-width:1120px;margin:0 auto;padding:56px 24px;}
+  .section-title{font-size:1.9rem;font-weight:800;margin-bottom:8px;text-align:center;}
+  .section-sub{color:var(--muted);text-align:center;max-width:600px;margin:0 auto 40px;}
+
+  .badges{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:8px;}
+  .badge{
+    background:var(--card);border:1px solid var(--border);border-radius:999px;
+    padding:8px 16px;font-size:.85rem;font-weight:600;color:var(--dark);
+    display:flex;align-items:center;gap:6px;
+  }
+  .badge.green{color:var(--green);}
+  .badge.blue{color:var(--blue);}
+
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+  .card{
+    background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+    padding:28px;transition:transform .2s ease, box-shadow .2s ease;
+  }
+  .card:hover{transform:translateY(-4px);box-shadow:0 14px 30px rgba(15,23,42,.08);}
+  .card .icon{
+    width:46px;height:46px;border-radius:12px;
+    background:linear-gradient(135deg,var(--blue),var(--green));
+    display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.3rem;font-weight:700;
+    margin-bottom:16px;
+  }
+  .card h3{font-size:1.05rem;font-weight:700;margin-bottom:8px;}
+  .card p{color:var(--muted);font-size:.92rem;}
+
+  .info-panel{
+    background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+    padding:0;overflow:hidden;box-shadow:0 10px 24px rgba(15,23,42,.05);
+  }
+  .info-header{
+    padding:24px 28px;border-bottom:1px solid var(--border);
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;
+  }
+  .info-header h3{font-size:1.15rem;font-weight:700;}
+  .info-grid{
+    display:grid;grid-template-columns:repeat(4,1fr);
+  }
+  .info-item{
+    padding:22px 20px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);
+  }
+  .info-item:nth-child(4n){border-right:none;}
+  .info-item .label{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px;}
+  .info-item .value{font-size:1rem;font-weight:700;}
+  .info-item .value.link{color:var(--blue);font-weight:600;font-size:.88rem;cursor:pointer;}
+
+  .device-table{width:100%;border-collapse:collapse;font-size:.92rem;}
+  .device-table th{
+    text-align:left;padding:14px 20px;background:#f1f5f9;color:var(--muted);
+    font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;font-weight:700;
+  }
+  .device-table td{padding:16px 20px;border-bottom:1px solid var(--border);}
+  .device-table tr:last-child td{border-bottom:none;}
+  .status-pill{
+    display:inline-flex;align-items:center;gap:6px;
+    background:rgba(22,163,74,.1);color:var(--green);
+    padding:4px 12px;border-radius:999px;font-weight:600;font-size:.82rem;
+  }
+  .status-pill::before{content:'●';font-size:.7rem;}
+
+  .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+  .step{text-align:center;}
+  .step .num{
+    width:44px;height:44px;border-radius:50%;background:var(--dark);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-weight:700;margin:0 auto 14px;
+  }
+  .step h4{font-size:.98rem;font-weight:700;margin-bottom:6px;}
+  .step p{color:var(--muted);font-size:.88rem;}
+
+  .cta-band{
+    background:linear-gradient(120deg,var(--dark),#1e3a8a);
+    color:#fff;border-radius:var(--radius);padding:52px 40px;text-align:center;
+  }
+  .cta-band h2{font-size:1.8rem;font-weight:800;margin-bottom:10px;}
+  .cta-band p{color:#cbd5e1;max-width:520px;margin:0 auto 26px;}
+
+  footer{
+    border-top:1px solid var(--border);padding:32px 24px;text-align:center;
+    color:var(--muted);font-size:.85rem;
+  }
+  footer .brand-mini{font-weight:700;color:var(--dark);}
+
+  @media(max-width:860px){
+    .hero{grid-template-columns:1fr;padding-top:48px;}
+    .hero-visual{order:-1;}
+    .grid-3{grid-template-columns:1fr;}
+    .info-grid{grid-template-columns:repeat(2,1fr);}
+    .info-item:nth-child(2n){border-right:none;}
+    .device-table{font-size:.82rem;}
+    .device-table th,.device-table td{padding:12px 10px;}
+    .steps{grid-template-columns:1fr 1fr;}
+    .nav-links{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <div class="brand"><img src="icon.jpg" alt="DocuSheetAI logo"> DocuSheet<span class="ai">AI</span></div>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#details">App Info</a>
+      <a href="#devices">Compatibility</a>
+    </div>
+    <a class="btn" href="#download">Get the App</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div>
+    <h1>Turn any image into an <span>Excel sheet</span> — instantly.</h1>
+    <p>DocuSheetAI uses AI to convert scanned documents, receipts, and tables from photos directly into clean, editable Excel spreadsheets. Fast, accurate, and built for mobile.</p>
+    <div class="hero-actions">
+      <a class="btn" href="#download" id="download">Download for Android</a>
+      <a class="btn btn-outline" href="#details">View App Details</a>
+    </div>
+    <div class="rating-line">
+      <span class="stars">★★★★★</span>
+      <span>Rated for 3+ · 10+ downloads · Version 1.0.1</span>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <img src="icon.jpg" alt="DocuSheetAI app icon">
+  </div>
+</section>
+
+<section id="features">
+  <h2 class="section-title">Why DocuSheetAI</h2>
+  <p class="section-sub">Everything you need to digitize documents, on the go.</p>
+  <div class="grid-3">
+    <div class="card">
+      <div class="icon">📷</div>
+      <h3>Image to Excel</h3>
+      <p>Snap a photo of any table, invoice, or handwritten sheet and get a structured .xlsx file in seconds.</p>
+    </div>
+    <div class="card">
+      <div class="icon">🧾</div>
+      <h3>Invoice Generation</h3>
+      <p>Create professional invoices and export them directly as PDF or Excel for sharing and record-keeping.</p>
+    </div>
+    <div class="card">
+      <div class="icon">🔍</div>
+      <h3>Barcode Scanning</h3>
+      <p>Scan barcodes to quickly populate item details into your sheets without manual entry.</p>
+    </div>
+    <div class="card">
+      <div class="icon">📄</div>
+      <h3>PDF Creation</h3>
+      <p>Generate polished PDF documents from your data with a single tap, ready to export or print.</p>
+    </div>
+    <div class="card">
+      <div class="icon">⚡</div>
+      <h3>AI-Powered Accuracy</h3>
+      <p>Advanced recognition extracts rows, columns, and values precisely — even from imperfect photos.</p>
+    </div>
+    <div class="card">
+      <div class="icon">📤</div>
+      <h3>Flexible Export</h3>
+      <p>Export your files in Excel or PDF format, ready to share via email, drive, or messaging apps.</p>
+    </div>
+  </div>
+</section>
+
+<section id="details">
+  <h2 class="section-title">App Details</h2>
+  <p class="section-sub">Official listing information from Google Play.</p>
+
+  <div class="info-panel">
+    <div class="info-header">
+      <h3>DocuSheetAI — Image to Excel Sheets</h3>
+      <span class="badge green">✓ Available on Google Play</span>
+    </div>
+    <div class="info-grid">
+      <div class="info-item">
+        <div class="label">Version</div>
+        <div class="value">1.0.1</div>
+      </div>
+      <div class="info-item">
+        <div class="label">Updated on</div>
+        <div class="value">14 Aug 2026</div>
+      </div>
+      <div class="info-item">
+        <div class="label">Requires Android</div>
+        <div class="value">7.0 and up</div>
+      </div>
+      <div class="info-item">
+        <div class="label">Downloads</div>
+        <div class="value">10+</div>
+      </div>
+      <div class="info-item">
+        <div class="label">Content rating</div>
+        <div class="value">Rated for 3+</div>
+      </div>
+      <div class="info-item">
+        <div class="label">Permissions</div>
+        <div class="value link">View details</div>
+      </div>
+      <div class="info-item">
+        <div class="label">Released on</div>
+        <div class="value">13 Aug 2026</div>
+      </div>
+      <div class="info-item">
+        <div class="label">Offered by</div>
+        <div class="value">ABDUL RAZAQ</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="devices">
+  <h2 class="section-title">Compatibility for Your Devices</h2>
+  <p class="section-sub">Verified to work smoothly across a range of Android devices.</p>
+
+  <div class="info-panel">
+    <table class="device-table">
+      <thead>
+        <tr>
+          <th>Device</th>
+          <th>Version</th>
+          <th>Compatibility</th>
+          <th>Download Size</th>
+          <th>Requires</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Samsung SM-A127F</strong></td>
+          <td>1.0.1</td>
+          <td><span class="status-pill">Works on your device</span></td>
+          <td>83 MB</td>
+          <td>Android 7.0 and up</td>
+        </tr>
+        <tr>
+          <td><strong>Samsung SM-G615F</strong></td>
+          <td>1.0.1</td>
+          <td><span class="status-pill">Works on your device</span></td>
+          <td>44 MB</td>
+          <td>Android 7.0 and up</td>
+        </tr>
+        <tr>
+          <td><strong>OPPO CPH2127</strong></td>
+          <td>1.0.1</td>
+          <td><span class="status-pill">Works on your device</span></td>
+          <td>83 MB</td>
+          <td>Android 7.0 and up</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <h2 class="section-title">How It Works</h2>
+  <p class="section-sub">From photo to spreadsheet in four simple steps.</p>
+  <div class="steps">
+    <div class="step">
+      <div class="num">1</div>
+      <h4>Capture</h4>
+      <p>Take a photo or upload an existing image of your document.</p>
+    </div>
+    <div class="step">
+      <div class="num">2</div>
+      <h4>Process</h4>
+      <p>AI extracts text, tables, and structure automatically.</p>
+    </div>
+    <div class="step">
+      <div class="num">3</div>
+      <h4>Edit</h4>
+      <p>Review and adjust the generated sheet if needed.</p>
+    </div>
+    <div class="step">
+      <div class="num">4</div>
+      <h4>Export</h4>
+      <p>Save or share as Excel or PDF, instantly.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="cta-band">
+    <h2>Start digitizing your documents today</h2>
+    <p>Join the growing number of users converting images into editable spreadsheets with DocuSheetAI on Android.</p>
+    <a class="btn" href="#download">Download Now</a>
+  </div>
+</section>
+
+<footer>
+  <p><span class="brand-mini">DocuSheetAI</span> · Image to Excel Sheets</p>
+  <p>Offered by ABDUL RAZAQ · Version 1.0.1 · &copy; 2026 DocuSheetAI. All rights reserved.</p>
+</footer>
+
+</body>
+</html>
